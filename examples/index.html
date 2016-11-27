@@ -45,14 +45,12 @@
                     canvasLabels: "Volyminformation",
                     canvasExclude: "attribution",
                     copyToClipboardEnabled: true,
-                    content: {
-                        manifestHeader: "Om bilden"
-                    },
                     element: "#metadata",
                     helper: h,
+                    aggregateValues: "källhänvisning, source reference",
                     limitType: IIIFComponents.MetadataComponentOptions.LimitType.LINES,
-                    manifestDisplayOrder: "serie, referenskod",
-                    manifestExclude: "källhänvisning",
+                    manifestDisplayOrder: "",
+                    manifestExclude: "",
                     range: helper.getRanges()[0],
                     sanitizer: function(html) {
                         var elem = document.createElement('div');

@@ -11637,6 +11637,7 @@ declare namespace IIIFComponents {
         rtlLanguageCodes: string;
         sanitizer: (html: string) => string;
         showAllLanguages: boolean;
+        aggregateValues: string;
     }
 }
 

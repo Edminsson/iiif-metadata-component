@@ -146,6 +146,32 @@ namespace IIIFComponents {
                 return;
             }
 
+            if (this.options.aggregateValues) {
+                var fromData = this._getManifestGroup();
+                var aggregateValuesConfig = this._readCSV(this.options.aggregateValues);
+
+                var toData: MetadataGroup[] = this._getCanvasGroups();
+
+                if (aggregateValuesConfig.length !== 0) {
+
+                    $.each(toData, (index: number, canvasGroup: MetadataGroup) => {
+                        $.each(canvasGroup.items, (index: number, item: MetadataItem) => {
+                            $.each(aggregateValuesConfig, (index: number, value: string) => {
+                                if (item.getLabel().toLowerCase() == value) {
+                                    var manifestIndex = fromData.items.findIndex(x => x.getLabel().toLowerCase() == value.toLowerCase());
+                                    if (manifestIndex != -1) {
+                                        var data = fromData.items.splice(manifestIndex, 1)[0];
+                                        item.setValue(data.getValue() + item.getValue());
+                                    }
+                                }
+                            });
+                        });
+
+                    });
+
+                }
+            }
+
             this._$noData.hide();
 
             this._render();

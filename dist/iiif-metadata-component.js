@@ -163,6 +163,26 @@ var IIIFComponents;
                 this._$noData.show();
                 return;
             }
+            if (this.options.aggregateValues) {
+                var fromData = this._getManifestGroup();
+                var aggregateValuesConfig = this._readCSV(this.options.aggregateValues);
+                var toData = this._getCanvasGroups();
+                if (aggregateValuesConfig.length !== 0) {
+                    $.each(toData, function (index, canvasGroup) {
+                        $.each(canvasGroup.items, function (index, item) {
+                            $.each(aggregateValuesConfig, function (index, value) {
+                                if (item.getLabel().toLowerCase() == value) {
+                                    var manifestIndex = fromData.items.findIndex(function (x) { return x.getLabel().toLowerCase() == value.toLowerCase(); });
+                                    if (manifestIndex != -1) {
+                                        var data = fromData.items.splice(manifestIndex, 1)[0];
+                                        item.setValue(data.getValue() + item.getValue());
+                                    }
+                                }
+                            });
+                        });
+                    });
+                }
+            }
             this._$noData.hide();
             this._render();
         };

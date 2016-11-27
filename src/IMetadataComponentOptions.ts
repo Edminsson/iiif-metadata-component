@@ -36,5 +36,6 @@ namespace IIIFComponents{
         rtlLanguageCodes: string;                       // csv of right-to-left language codes
         sanitizer: (html: string) => string;            // see example for how to pass in a sanitizer
         showAllLanguages: boolean;                      // display all translations
+        aggregateValues: string;
     }
 }
