@@ -33,22 +33,24 @@
             // http://tomcrane.github.io/scratch/manifests/vdc_100000004987.0x000001.json (rtl)
 
             Manifold.loadManifest({
-                iiifResourceUri: 'https://iiif.riksarkivet.se/arkis!C0000268/manifest'
+                iiifResourceUri: 'https://iiif.riksarkivet.se/arkis!C0000268/manifest',
+                locale: 'sv-SE'
             }).then(function(h){
                 
                 helper = h;
                 
                 component = new IIIFComponents.MetadataComponent({
                     canvasDisplayOrder: "attribution, title",
-                    canvases: [helper.getCanvasByIndex(0), helper.getCanvasByIndex(1)],
-                    canvasLabels: "Left page, Right page",
+                    canvases: [helper.getCanvasByIndex(1)],
+                    canvasLabels: "Volyminformation",
                     canvasExclude: "attribution",
                     copyToClipboardEnabled: true,
+                    manifestHeader: "Om bilden",
                     element: "#metadata",
                     helper: h,
                     limitType: IIIFComponents.MetadataComponentOptions.LimitType.LINES,
-                    manifestDisplayOrder: "attribution, publication date, license, title",
-                    manifestExclude: "license, attribution",
+                    manifestDisplayOrder: "serie, referenskod",
+                    manifestExclude: "källhänvisning",
                     range: helper.getRanges()[0],
                     sanitizer: function(html) {
                         var elem = document.createElement('div');
