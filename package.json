@@ -18,6 +18,9 @@
   "homepage": "https://github.com/viewdir/iiif-metadata-component#readme",
   "devDependencies": {
     "base-component": "viewdir/base-component#v1.0.7",
+    "chai": "^3.5.0",
+    "gulp-mocha": "^3.0.1",
+    "jsdom": "^9.8.3",
     "gulp": "^3.9.1",
     "gulp-tasks": "viewdir/gulp-tasks#v1.0.2",
     "jquery-plugins": "edsilv/jquery-plugins",

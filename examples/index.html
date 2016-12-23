@@ -23,65 +23,106 @@
     <script>
 
         var helper, component;
-        
+
+        function createMetadataComponent(helper) {
+            return component = new IIIFComponents.MetadataComponent({
+                canvasDisplayOrder: "attribution, title",
+                canvases: [helper.getCanvasByIndex(0), helper.getCanvasByIndex(1)],
+                canvasLabels: "Left page, Right page",
+                canvasExclude: "attribution",
+                copyToClipboardEnabled: false,
+                element: "#metadata",
+                helper: helper,
+                limitType: IIIFComponents.MetadataComponentOptions.LimitType.LINES,
+                manifestDisplayOrder: "attribution, publication date, license, title",
+                manifestExclude: "license, attribution",
+                range: helper.getRanges()[0],
+                sanitizer: function(html) {
+                    var elem = document.createElement('div');
+                    var $elem = $(elem);
+                    $elem.html(html);
+
+                    var s = new Sanitize({
+                        elements:   ['a', 'b', 'br', 'img', 'p', 'i', 'span'],
+                        attributes: {
+                            a: ['href'],
+                            img: ['src', 'alt']
+                        },
+                        protocols:  {
+                            a: { href: ['http', 'https'] }
+                        }
+                    });
+
+                    $elem.html(s.clean_node(elem));
+
+                    return $elem.html();
+                },
+                showAllLanguages: false
+            });
+
+        }
+
+        function getManifest(manifestUrl, locale) {
+            return Manifold.loadManifest({
+                iiifResourceUri: manifestUrl,
+                collectionIndex: 0,
+                manifestIndex: 0,
+                locale: locale
+            });
+        }
+
+        function setManifest(manifestUrl, locale) {
+            var deferred = $.Deferred();
+
+            getManifest(manifestUrl, locale).then(function(h){
+                var component = createMetadataComponent(h);                
+                component.databind();
+                deferred.resolve("OK");
+            });
+            //.catch(function(e) {
+            //    console.error(e);
+            //    deferred.reject();
+            //});
+
+            return deferred.promise();
+
+        }
+
+
         $(function() {
-            
+
             // http://wellcomelibrary.org/iiif/b18035978/manifest (Biocrats)
             // https://iiif.riksarkivet.se/arkis!C0000263/manifest (canvas metadata)
             // https://iiif.riksarkivet.se/arkis!F0001185/manifest (merge source reference)
             // https://edsilv.github.io/test-manifests/all-metadata.json (all metadata)
             // http://tomcrane.github.io/scratch/manifests/vdc_100000004987.0x000001.json (rtl)
+            //var defaultManifestUrl ='http://iiif.bodleian.ox.ac.uk/iiif/manifest/60834383-7146-41ab-bfe1-48ee97bc04be.json';
+            //var defaultManifestUrl ='https://tomcrane.github.io/scratch/manifests/vdc_100000004987.0x000001.json';
+            var defaultManifestUrl = "https://iiif.riksarkivet.se/arkis!C0000268/manifest";
+            //var defaultManifestUrl ='manifest1.json';
+            var currentManifestUrl, currentLocale;
 
-            Manifold.loadManifest({
-                iiifResourceUri: 'https://iiif.riksarkivet.se/arkis!C0000268/manifest',
-                locale: 'sv-SE'
-            }).then(function(h){
-                
-                helper = h;
-                
-                component = new IIIFComponents.MetadataComponent({
-                    canvasDisplayOrder: "attribution, title",
-                    canvases: [helper.getCanvasByIndex(1)],
-                    canvasLabels: "Volyminformation",
-                    canvasExclude: "attribution",
-                    copyToClipboardEnabled: true,
-                    element: "#metadata",
-                    helper: h,
-                    aggregateValues: "källhänvisning, source reference",
-                    limitType: IIIFComponents.MetadataComponentOptions.LimitType.LINES,
-                    manifestDisplayOrder: "",
-                    manifestExclude: "",
-                    range: helper.getRanges()[0],
-                    sanitizer: function(html) {
-                        var elem = document.createElement('div');
-                        var $elem = $(elem);
-                        $elem.html(html);
+            function getCurrentValues() {
+                currentManifestUrl = $('#manifesturl').val() ? $('#manifesturl').val() : defaultManifestUrl;
+                currentLocale = $('#locale').val();
+            }
 
-                        var s = new Sanitize({
-                            elements:   ['a', 'b', 'br', 'img', 'p', 'i', 'span'],
-                            attributes: {
-                                a: ['href'],
-                                img: ['src', 'alt']
-                            },
-                            protocols:  {
-                                a: { href: ['http', 'https'] }
-                            }
-                        });
+            $('#setmanifest').on('click', function() {
+                getCurrentValues();
+                setManifest(currentManifestUrl, currentLocale);
+            })
+            
+            $('#locale').on('change', function() {
+                getCurrentValues();
+                setManifest(currentManifestUrl, currentLocale);
+            })
+            
+            getCurrentValues();
+            $('#manifesturl').val(currentManifestUrl);
+            setManifest(currentManifestUrl, currentLocale);
 
-                        $elem.html(s.clean_node(elem));
-
-                        return $elem.html();
-                    },
-                    showAllLanguages: false
-                });
-
-                component.databind();
-
-            }).catch(function() {
-                console.error('failed to load manifest');
-            });
         });
-
+            
     </script>
 
 </body>
