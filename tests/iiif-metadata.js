@@ -60,10 +60,20 @@ describe('Ajax test', function(){
         return getManifest(manifestUrl, locale).then(function(h){
             check(h, 'helper');
             var component = createMetadataComponent(h);                
-            //var compis = myCreateMetadataComponent(h);
-            //component.options.limitType = null;
             component.databind();
-            //compis.databind();
+
+            var manifestHeader = $('.groups>.group>.header').text();
+            var labelWithoutLanguage = $('._i-am-a-label-without-language>.label').text();
+            var valueOfLabelWithoutLanguage = $('._i-am-a-label-without-language>.values>.value').text();
+            var IamLabelWithoutLanguageValueCount = $('._i-am-a-label-without-language>.values>.value').length;
+            var IamLabelValueCount = $('._i-am-a-label>.values>.value').length;
+            expect(manifestHeader).to.equal("About the item");
+            expect(labelWithoutLanguage).to.equal("I am a label without language");
+            expect(valueOfLabelWithoutLanguage).to.equal("And I am a value without language");
+            expect(IamLabelWithoutLanguageValueCount).to.equal(1);
+            expect(IamLabelValueCount).to.equal(2);
+
+
             done();
         }, function(err) {
             console.log('Nåt i databind-testet failade', err);
@@ -77,12 +87,6 @@ describe('Ajax test', function(){
 
         if (setManifest) {console.log('there is a setManifest function')} else {console.log('no setManifest function')}
         return setManifest(manifestUrl, locale).then(function(){
-            var groups = $('.groups').length;
-            var items = $('.items').length;    
-            console.log('groups', groups);
-            console.log('items', items);
-            //console.log("setManifest svarade");
-            //expect(groups.length).to.equal(2);
             done();
         },
         function(err) {
