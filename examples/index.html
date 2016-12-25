@@ -22,9 +22,10 @@
 
     <script>
 
-        var helper, component;
+        var helper, component, limitType, limit;
 
-        function createMetadataComponent(helper) {
+        function createMetadataComponent(helper, currentLimitType, currentLimit) {
+
             return component = new IIIFComponents.MetadataComponent({
                 canvasDisplayOrder: "attribution, title",
                 canvases: [helper.getCanvasByIndex(0), helper.getCanvasByIndex(1)],
@@ -33,7 +34,8 @@
                 copyToClipboardEnabled: false,
                 element: "#metadata",
                 helper: helper,
-                limitType: IIIFComponents.MetadataComponentOptions.LimitType.LINES,
+                limit: currentLimit,
+                limitType: currentLimitType || IIIFComponents.MetadataComponentOptions.LimitType.LINES,
                 manifestDisplayOrder: "attribution, publication date, license, title",
                 manifestExclude: "license, attribution",
                 range: helper.getRanges()[0],
@@ -71,11 +73,11 @@
             });
         }
 
-        function setManifest(manifestUrl, locale) {
+        function setManifest(manifestUrl, locale, currentLimitType, limit) {
             var deferred = $.Deferred();
 
             getManifest(manifestUrl, locale).then(function(h){
-                var component = createMetadataComponent(h);                
+                var component = createMetadataComponent(h, currentLimitType, limit);                
                 component.databind();
                 deferred.resolve("OK");
             });
@@ -103,25 +105,40 @@
             var currentManifestUrl, currentLocale;
 
             function getCurrentValues() {
-                currentManifestUrl = $('#manifesturl').val() ? $('#manifesturl').val() : defaultManifestUrl;
-                currentLocale = $('#locale').val();
+                currentManifestUrl = defaultManifestUrl;
+                currentLocale = getParameterByName('locale') || 'en';
+                limitType = getParameterByName('limittype') && getParameterByName('limittype').toLowerCase() === 'chars' ? IIIFComponents.MetadataComponentOptions.LimitType.CHARS : IIIFComponents.MetadataComponentOptions.LimitType.LINES;
+                limit = getParameterByName('limit') ? parseInt(getParameterByName('limit')) : 500;
             }
 
             $('#setmanifest').on('click', function() {
                 getCurrentValues();
-                setManifest(currentManifestUrl, currentLocale);
+                setManifest(currentManifestUrl, currentLocale, limitType, limit);
             })
             
             $('#locale').on('change', function() {
                 getCurrentValues();
-                setManifest(currentManifestUrl, currentLocale);
+                setManifest(currentManifestUrl, currentLocale, limitType, limit);
             })
             
             getCurrentValues();
             $('#manifesturl').val(currentManifestUrl);
-            setManifest(currentManifestUrl, currentLocale);
+            setManifest(currentManifestUrl, currentLocale, limitType, limit);
 
         });
+
+        function getParameterByName(name, url) {
+            if (!url) {
+            url = window.location.href;
+            }
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)", 'i'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
             
     </script>
 

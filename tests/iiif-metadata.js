@@ -59,7 +59,9 @@ describe('Ajax test', function(){
 
         return getManifest(manifestUrl, locale).then(function(h){
             check(h, 'helper');
-            var component = createMetadataComponent(h);                
+            var limitType = IIIFComponents.MetadataComponentOptions.LimitType.CHARS;
+            var limit = 500;
+            var component = createMetadataComponent(h, limitType, limit);                
             component.databind();
 
             var manifestHeader = $('.groups>.group>.header').text();
@@ -86,7 +88,9 @@ describe('Ajax test', function(){
         var locale = "en";
 
         if (setManifest) {console.log('there is a setManifest function')} else {console.log('no setManifest function')}
-        return setManifest(manifestUrl, locale).then(function(){
+        var limitType = IIIFComponents.MetadataComponentOptions.LimitType.CHARS;
+        var limit = 500;
+        return setManifest(manifestUrl, locale, limitType, limit).then(function(){
             done();
         },
         function(err) {
